@@ -16,8 +16,9 @@ sharedCount = 0
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: PostRepository = PostRepositoryFileImpl(application)
-    val data = repository.get()
+    private val repository: PostRepository = PostRepositorySQLiteImpl(
+        AppDb.getInstance(application).postDAO)
+    val data = repository.getAll()
     val edited = MutableLiveData(empty)
     fun like(id: Int) = repository.like(id)
 
