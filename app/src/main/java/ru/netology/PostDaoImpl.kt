@@ -16,9 +16,9 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDAO {
             ${PostColumns.COLUMN_AUTHOR} TEXT NOT NULL,
             ${PostColumns.COLUMN_CONTENT} TEXT NOT NULL,
             ${PostColumns.COLUMN_PUBLISHED} TEXT NOT NULL,
+            ${PostColumns.COLUMN_LIKES_COUNT} INTEGER NOT NULL DEFAULT 0,
             ${PostColumns.COLUMN_LIKED_BY_ME} BOOLEAN NOT NULL DEFAULT 0,
-            ${PostColumns.COLUMN_LIKES} INTEGER NOT NULL DEFAULT 0
-            ${PostColumns.COLUMN_SHARED} INTEGER NOT NULL DEFAULT 0
+            ${PostColumns.COLUMN_SHARED_COUNT} INTEGER NOT NULL DEFAULT 0
         );
         """.trimIndent()
     }
@@ -29,17 +29,17 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDAO {
         const val COLUMN_AUTHOR = "author"
         const val COLUMN_CONTENT = "content"
         const val COLUMN_PUBLISHED = "published"
+        const val COLUMN_LIKES_COUNT = "likes"
         const val COLUMN_LIKED_BY_ME = "likedByMe"
-        const val COLUMN_LIKES = "likes"
-        const val COLUMN_SHARED = "shared"
+        const val COLUMN_SHARED_COUNT = "sharedCount"
         val ALL_COLUMNS = arrayOf(
             COLUMN_ID,
             COLUMN_AUTHOR,
             COLUMN_CONTENT,
             COLUMN_PUBLISHED,
+            COLUMN_LIKES_COUNT,
             COLUMN_LIKED_BY_ME,
-            COLUMN_LIKES,
-            COLUMN_SHARED
+            COLUMN_SHARED_COUNT
         )
     }
 
@@ -98,11 +98,16 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDAO {
     }
 
     override fun share(id: Int) {
-        TODO("Not yet implemented")
+        db.execSQL(
+            """
+           UPDATE posts SET
+               sharedCount = sharedCount + 1 
+           WHERE id = ?;
+        """.trimIndent(), arrayOf(id)
+        )
     }
 
     override fun singlePost(id: Int) {
-        TODO("Not yet implemented")
     }
 
     override fun video(id: Int) {
@@ -124,9 +129,9 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDAO {
                 author = getString(getColumnIndexOrThrow(PostColumns.COLUMN_AUTHOR)),
                 content = getString(getColumnIndexOrThrow(PostColumns.COLUMN_CONTENT)),
                 published = getString(getColumnIndexOrThrow(PostColumns.COLUMN_PUBLISHED)),
+                likesCount = getInt(getColumnIndexOrThrow(PostColumns.COLUMN_LIKES_COUNT)),
                 likedByMe = getInt(getColumnIndexOrThrow(PostColumns.COLUMN_LIKED_BY_ME)) != 0,
-                likesCount = getInt(getColumnIndexOrThrow(PostColumns.COLUMN_LIKES)),
-                sharedCount = getInt(getColumnIndexOrThrow(PostColumns.COLUMN_SHARED)),
+                sharedCount = getInt(getColumnIndexOrThrow(PostColumns.COLUMN_SHARED_COUNT)),
             )
         }
     }
