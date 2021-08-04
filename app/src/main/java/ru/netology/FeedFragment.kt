@@ -87,10 +87,10 @@ class FeedFragment : Fragment() {
 
             override fun video(post: Post) {
 
-                val videoIntent =
-                    Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
-                startActivity(videoIntent)
-                viewModel.video(post.id)
+//                val videoIntent =
+//                    Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
+//                startActivity(videoIntent)
+//                viewModel.video(post.id)
             }
         })
 

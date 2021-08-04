@@ -10,13 +10,17 @@ import androidx.lifecycle.Transformations.map
 
 class PostDaoImpl(private val db: SQLiteDatabase) : PostDAO {
     companion object {
-        val DDL: String = "CREATE TABLE posts( id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                " author TEXT NOT NULL," +
-                " content TEXT NOT NULL," +
-                " published TEXT NOT NULL," +
-                " likedByMe BOOLEAN NOT NULL DEFAULT false," +
-                " lakes INTEGER NOT NULL DEFAULT 0," +
-                " share INTEGER NOT NULL DEFAULT 0);"
+        val DDL = """
+        CREATE TABLE ${PostColumns.TABLE} (
+            ${PostColumns.COLUMN_ID} INTEGER PRIMARY KEY AUTOINCREMENT,
+            ${PostColumns.COLUMN_AUTHOR} TEXT NOT NULL,
+            ${PostColumns.COLUMN_CONTENT} TEXT NOT NULL,
+            ${PostColumns.COLUMN_PUBLISHED} TEXT NOT NULL,
+            ${PostColumns.COLUMN_LIKED_BY_ME} BOOLEAN NOT NULL DEFAULT 0,
+            ${PostColumns.COLUMN_LIKES} INTEGER NOT NULL DEFAULT 0
+            ${PostColumns.COLUMN_SHARED} INTEGER NOT NULL DEFAULT 0
+        );
+        """.trimIndent()
     }
 
     object PostColumns {
@@ -26,8 +30,8 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDAO {
         const val COLUMN_CONTENT = "content"
         const val COLUMN_PUBLISHED = "published"
         const val COLUMN_LIKED_BY_ME = "likedByMe"
-        const val COLUMN_LIKES = "likesCount"
-        const val COLUMN_SHARE = "shareCount"
+        const val COLUMN_LIKES = "likes"
+        const val COLUMN_SHARED = "shared"
         val ALL_COLUMNS = arrayOf(
             COLUMN_ID,
             COLUMN_AUTHOR,
@@ -35,7 +39,7 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDAO {
             COLUMN_PUBLISHED,
             COLUMN_LIKED_BY_ME,
             COLUMN_LIKES,
-            COLUMN_SHARE
+            COLUMN_SHARED
         )
     }
 
@@ -49,12 +53,11 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDAO {
             null,
             null,
             "${PostColumns.COLUMN_ID} DESC"
-        )
-            .use {
-                while (it.moveToNext()) {
-                    posts.add(map(it))
-                }
+        ).use {
+            while (it.moveToNext()) {
+                posts.add(map(it))
             }
+        }
         return posts
     }
 
@@ -63,6 +66,7 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDAO {
             if (post.id != 0) {
                 put(PostColumns.COLUMN_ID, post.id)
             }
+            // TODO: remove hardcoded values
             put(PostColumns.COLUMN_AUTHOR, "Me")
             put(PostColumns.COLUMN_CONTENT, post.content)
             put(PostColumns.COLUMN_PUBLISHED, "now")
@@ -85,15 +89,23 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDAO {
     override fun like(id: Int) {
         db.execSQL(
             """
-             UPDATE posts SET
-                likes = likes + CASE WHEN likedByMe THEN -1 ELSE 1 END,
-                likedByMe = CASE WHEN likedByMe THEN 0 ELSE 1 END
-                WHERE id =?;
-            """.trimIndent(), arrayOf(id)
+           UPDATE posts SET
+               likes = likes + CASE WHEN likedByMe THEN -1 ELSE 1 END,
+               likedByMe = CASE WHEN likedByMe THEN 0 ELSE 1 END
+           WHERE id = ?;
+        """.trimIndent(), arrayOf(id)
         )
     }
 
     override fun share(id: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun singlePost(id: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun video(id: Int) {
         TODO("Not yet implemented")
     }
 
@@ -105,15 +117,6 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDAO {
         )
     }
 
-    override fun singlePost(id: Int) {
-        TODO("Not yet implemented")
-    }
-
-    override fun video(id: Int) {
-        TODO("Not yet implemented")
-    }
-
-
     private fun map(cursor: Cursor): Post {
         with(cursor) {
             return Post(
@@ -123,9 +126,8 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDAO {
                 published = getString(getColumnIndexOrThrow(PostColumns.COLUMN_PUBLISHED)),
                 likedByMe = getInt(getColumnIndexOrThrow(PostColumns.COLUMN_LIKED_BY_ME)) != 0,
                 likesCount = getInt(getColumnIndexOrThrow(PostColumns.COLUMN_LIKES)),
-                sharedCount = getInt(getColumnIndexOrThrow(PostColumns.COLUMN_SHARE))
+                sharedCount = getInt(getColumnIndexOrThrow(PostColumns.COLUMN_SHARED)),
             )
-
         }
     }
 }

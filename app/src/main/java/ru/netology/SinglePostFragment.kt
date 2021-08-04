@@ -46,8 +46,8 @@ class SinglePostFragment : Fragment() {
                 shared.text = post?.let { transferToK(it?.sharedCount) }
                 like.isChecked = post?.likedByMe == true
 
-                if (post?.video == null) play.visibility = View.INVISIBLE
-                else View.VISIBLE
+//                if (post?.video == null) play.visibility = View.INVISIBLE
+//                else View.VISIBLE
 
 
                 like.setOnClickListener {

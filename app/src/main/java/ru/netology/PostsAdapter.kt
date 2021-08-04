@@ -52,8 +52,8 @@ class PostViewHolder(
             shared.text = transferToK(post.sharedCount)
             like.isChecked = post.likedByMe
 
-            if (post.video == null) play.visibility = View.INVISIBLE
-            else View.VISIBLE
+//            if (post.video == null) play.visibility = View.INVISIBLE
+//            else View.VISIBLE
 
 
             like.setOnClickListener {
