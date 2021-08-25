@@ -14,7 +14,7 @@ import ru.netology.databinding.FragmentSinglePostBinding
 
 class SinglePostFragment : Fragment() {
 
-    val viewModel: PostViewModel by viewModels(
+    private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment
     )
 
@@ -34,7 +34,7 @@ class SinglePostFragment : Fragment() {
             val post = viewModel.data.value
                 ?.find { it.id == arguments?.getInt("MyId")
 
-                    }
+                }
 
 
 

@@ -40,7 +40,7 @@ class FeedFragment : Fragment() {
 
         val adapter = PostsAdapter(object : CallBackPost {
             override fun liked(post: Post) {
-                viewModel.like(post.id)
+           //     viewModel.like(post.id)
             }
 
             override fun shared(post: Post) {
